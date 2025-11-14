@@ -7,10 +7,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/test").permitAll()  // allow test API
@@ -18,7 +16,6 @@ public class SecurityConfig {
             )
             .formLogin(form -> form.disable())   // disable login form
             .httpBasic(httpBasic -> httpBasic.disable());
-
         return http.build();
     }
 }
