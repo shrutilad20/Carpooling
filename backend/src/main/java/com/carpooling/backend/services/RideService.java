@@ -13,13 +13,14 @@ public class RideService {
 
     private final RideRepository rideRepo;
     private final UserRepository userRepo;
-
     public RideService(RideRepository rideRepo, UserRepository userRepo) {
         this.rideRepo = rideRepo;
         this.userRepo = userRepo;
     }
 
+
     public Ride postRide(String driverEmail, PostRideRequest req) {
+        
         User driver = userRepo.findByEmail(driverEmail).orElseThrow(() -> new RuntimeException("Driver not found"));
         Ride r = new Ride();
         r.setDriver(driver);
