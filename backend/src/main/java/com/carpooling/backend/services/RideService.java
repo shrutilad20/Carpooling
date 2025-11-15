@@ -18,9 +18,8 @@ public class RideService {
         this.userRepo = userRepo;
     }
 
-
     public Ride postRide(String driverEmail, PostRideRequest req) {
-        
+
         User driver = userRepo.findByEmail(driverEmail).orElseThrow(() -> new RuntimeException("Driver not found"));
         Ride r = new Ride();
         r.setDriver(driver);
@@ -34,6 +33,7 @@ public class RideService {
         return rideRepo.save(r);
     }
 
+
     public List<Ride> searchRides(SearchRideRequest req) {
         LocalDateTime from = req.getFrom() == null ? LocalDateTime.now().minusDays(1) : req.getFrom();
         LocalDateTime to = req.getTo() == null ? LocalDateTime.now().plusDays(30) : req.getTo();
@@ -42,5 +42,6 @@ public class RideService {
                 req.getDestination() == null ? "" : req.getDestination(),
                 from, to
         );
+        
     }
 }
