@@ -2,9 +2,14 @@ package com.carpooling.backend.controllers;
 
 import com.carpooling.backend.dtos.BookingRequest;
 import com.carpooling.backend.models.Booking;
+import com.carpooling.backend.models.User;
 import com.carpooling.backend.services.BookingService;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -16,8 +21,27 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    @PostMapping("/book")
-    public ResponseEntity<Booking> book(@RequestBody BookingRequest req) {
-        return ResponseEntity.ok(bookingService.bookRide(req.getPassengerEmail(), req));
+    // ⭐ Passenger books ride
+    @PostMapping
+    public ResponseEntity<?> bookRide(@RequestBody BookingRequest req) {
+
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(
+                bookingService.bookRide(user.getEmail(), req)
+        );
+    }
+
+    // ⭐ Passenger views own bookings
+    @GetMapping("/my")
+    public ResponseEntity<List<Booking>> myBookings() {
+
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(
+                bookingService.getBookingsForPassenger(user.getId())
+        );
     }
 }

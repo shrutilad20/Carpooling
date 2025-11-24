@@ -1,45 +1,54 @@
 package com.carpooling.backend.services;
 
 import com.carpooling.backend.dtos.BookingRequest;
-import com.carpooling.backend.models.*;
-import com.carpooling.backend.repositories.*;
+import com.carpooling.backend.models.Booking;
+import com.carpooling.backend.models.Ride;
+import com.carpooling.backend.models.User;
+import com.carpooling.backend.repositories.BookingRepository;
+import com.carpooling.backend.repositories.RideRepository;
+import com.carpooling.backend.repositories.UserRepository;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 
 @Service
 public class BookingService {
 
-    private final BookingRepository bookingRepo;
     private final RideRepository rideRepo;
     private final UserRepository userRepo;
+    private final BookingRepository bookingRepo;
 
-    public BookingService(BookingRepository bookingRepo, RideRepository rideRepo, UserRepository userRepo) {
-        this.bookingRepo = bookingRepo;
+    public BookingService(RideRepository rideRepo, UserRepository userRepo, BookingRepository bookingRepo) {
         this.rideRepo = rideRepo;
         this.userRepo = userRepo;
+        this.bookingRepo = bookingRepo;
     }
+    public List<Booking> getBookingsForPassenger(Long passengerId) {
+    return bookingRepo.findByPassengerId(passengerId);
+}
+
 
     public Booking bookRide(String passengerEmail, BookingRequest req) {
-        User passenger = userRepo.findByEmail(passengerEmail).orElseThrow(() -> new RuntimeException("Passenger not found"));
-        Ride ride = rideRepo.findById(req.getRideId()).orElseThrow(() -> new RuntimeException("Ride not found"));
 
-        if (ride.getAvailableSeats() < req.getSeats()) throw new RuntimeException("Not enough seats available");
+        Ride ride = rideRepo.findById(req.getRideId())
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
 
-        // basic fare calc: baseFare + ratePerKm * assumedDistance (we will just use baseFare for now)
-        double fare = ride.getBaseFare();
+        User passenger = userRepo.findByEmail(passengerEmail)
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
 
-        Booking b = new Booking();
-        b.setRide(ride);
-        b.setPassenger(passenger);
-        b.setSeatsBooked(req.getSeats());
-        b.setFareAmount(fare);
-        b.setBookedAt(LocalDateTime.now());
-        b.setStatus("CONFIRMED");
-        Booking saved = bookingRepo.save(b);
+        if (ride.getAvailableSeats() < req.getSeats()) {
+            throw new RuntimeException("Not enough seats available");
+        }
 
         ride.setAvailableSeats(ride.getAvailableSeats() - req.getSeats());
         rideRepo.save(ride);
 
-        return saved;
+        Booking booking = new Booking();
+        booking.setRide(ride);
+        booking.setPassenger(passenger);
+        booking.setSeats(req.getSeats());
+
+        return bookingRepo.save(booking);
     }
 }

@@ -1,26 +1,31 @@
 package com.carpooling.backend.models;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "bookings")
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
 public class Booking {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="ride_id", nullable=false)
+    @JoinColumn(name = "ride_id")
     private Ride ride;
 
     @ManyToOne
-    @JoinColumn(name="passenger_id", nullable=false)
+    @JoinColumn(name = "passenger_id")
     private User passenger;
 
-    private Integer seatsBooked;
-    private Double fareAmount;
-    private LocalDateTime bookedAt;
-    private String status; // CONFIRMED, CANCELLED, COMPLETED
+    private int seats;
 }

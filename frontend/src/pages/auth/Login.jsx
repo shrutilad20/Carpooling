@@ -1,5 +1,5 @@
 import { useState } from "react";
-import authAPI from "../../api/auth";   // FIXED import
+import authAPI from "../../api/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,21 +16,28 @@ export default function Login() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Login</h2>
+    <div className="flex justify-center items-center h-[80vh] px-4">
+      <div className="neu-card p-10 w-[380px]">
 
-      <input
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      /><br />
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      /><br />
+        <input
+          placeholder="Email"
+          className="neu-pressed w-full p-3 mb-4 outline-none"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <button onClick={handleLogin}>Login</button>
+        <input
+          placeholder="Password"
+          type="password"
+          className="neu-pressed w-full p-3 mb-4 outline-none"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button onClick={handleLogin} className="neu-btn w-full">
+          Login
+        </button>
+      </div>
     </div>
   );
 }

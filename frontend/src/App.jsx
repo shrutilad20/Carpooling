@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import VerifyOtp from "./pages/auth/VerifyOtp";
 
 import DriverDashboard from "./pages/driver/DriverDashboard";
 import PostRide from "./pages/driver/PostRide";
@@ -20,13 +21,14 @@ function App() {
       <Navbar />
 
       <Routes>
+
         {/* Public pages */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/driver/post-ride" element={<ProtectedRoute><PostRide /></ProtectedRoute>} />
-        <Route path="/passenger/search" element={<ProtectedRoute><SearchRide /></ProtectedRoute>} />
-        <Route path="/passenger/book/:rideId" element={<ProtectedRoute><BookRide /></ProtectedRoute>} />
+
+        {/* ⭐ ADD THIS (OTP Verification Page) */}
+        <Route path="/verify-otp" element={<VerifyOtp />} />
 
         {/* Driver routes */}
         <Route
@@ -52,9 +54,10 @@ function App() {
           element={<ProtectedRoute role="PASSENGER"><SearchRide /></ProtectedRoute>}
         />
         <Route
-          path="/passenger/book"
+          path="/passenger/book/:rideId"
           element={<ProtectedRoute role="PASSENGER"><BookRide /></ProtectedRoute>}
         />
+        
       </Routes>
     </Router>
   );

@@ -4,6 +4,8 @@ import com.carpooling.backend.dtos.PostRideRequest;
 import com.carpooling.backend.dtos.SearchRideRequest;
 import com.carpooling.backend.models.*;
 import com.carpooling.backend.repositories.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +34,13 @@ public class RideService {
         r.setRatePerKm(req.getRatePerKm());
         return rideRepo.save(r);
     }
+public List<Ride> getRidesByDriver(Long driverId) {
+    return rideRepo.findByDriverId(driverId);
+}
+@Autowired BookingRepository bookingRepo;
+public List<Booking> getBookingsForRide(Long rideId) {
+    return bookingRepo.findByRideId(rideId);
+}
 
 
     public List<Ride> searchRides(SearchRideRequest req) {

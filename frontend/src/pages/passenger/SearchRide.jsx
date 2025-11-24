@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import rideAPI from "../../api/ride";
 import RideCard from "../../components/RideCard";
 
@@ -22,60 +22,37 @@ export default function SearchRide() {
       source: form.source,
       destination: form.destination,
       from: form.date + "T00:00:00",
-      to: form.date + "T23:59:00"
+      to: form.date + "T23:59:00",
     };
 
     try {
       const res = await rideAPI.searchRides(body);
       setResults(res.data);
-    } catch (err) {
-      console.error(err);
-      alert("Error fetching rides");
+    } catch {
+      alert("Error getting rides");
     }
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Search Rides</h2>
+    <div className="px-6 py-10">
+      <div className="neu-card p-8 mx-auto w-[420px]">
+        <h2 className="text-2xl font-bold mb-4 text-center">Search Rides</h2>
 
-      <form onSubmit={handleSearch} style={{ maxWidth: "400px" }}>
-        <input
-          type="text"
-          name="source"
-          placeholder="Source"
-          onChange={handleChange}
-          required
-        /><br />
+        <form onSubmit={handleSearch} className="flex flex-col gap-4">
+          <input className="neu-pressed p-3" placeholder="Source" name="source" onChange={handleChange} />
+          <input className="neu-pressed p-3" placeholder="Destination" name="destination" onChange={handleChange} />
+          <input className="neu-pressed p-3" type="date" name="date" onChange={handleChange} />
+          <button className="neu-btn w-full">Search</button>
+        </form>
+      </div>
 
-        <input
-          type="text"
-          name="destination"
-          placeholder="Destination"
-          onChange={handleChange}
-          required
-        /><br />
+      <h3 className="mt-10 text-xl font-semibold text-center">Available Rides</h3>
 
-        <input
-          type="date"
-          name="date"
-          onChange={handleChange}
-          required
-        /><br />
-
-        <button type="submit">Search</button>
-      </form>
-
-      <hr />
-
-      <h3>Available Rides:</h3>
-
-      {results.length === 0 ? (
-        <p>No rides found</p>
-      ) : (
-        results.map((r) => (
-          <RideCard key={r.id} ride={r} />
-        ))
-      )}
+      <div className="mt-4 flex flex-col items-center">
+        {results.length === 0 ? <p>No rides found</p> :
+          results.map((r) => <RideCard key={r.id} ride={r} />)
+        }
+      </div>
     </div>
   );
 }

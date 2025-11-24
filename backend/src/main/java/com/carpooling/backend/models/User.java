@@ -2,6 +2,8 @@ package com.carpooling.backend.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -19,6 +21,12 @@ public class User {
 
     private String name;
     private String phone;
+    @Column
+private String otp;
+
+@Column
+private LocalDateTime otpExpiry;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",

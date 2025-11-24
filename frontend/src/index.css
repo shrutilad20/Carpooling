@@ -1,13 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Neumorphism Global Styles --- */
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: #e0e5ec;
+  font-family: 'Inter', sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Soft shadow container */
+.neu-card {
+  background: #e0e5ec;
+  border-radius: 20px;
+  box-shadow:
+    10px 10px 20px #bebfc4,
+    -10px -10px 20px #ffffff;
+}
+
+/* Soft pressed effect */
+.neu-pressed {
+  background: #e0e5ec;
+  border-radius: 20px;
+  box-shadow:
+    inset 8px 8px 15px #bebfc4,
+    inset -8px -8px 15px #ffffff;
+}
+
+/* Neumorphic button */
+.neu-btn {
+  background: #e0e5ec;
+  border-radius: 12px;
+  box-shadow:
+    5px 5px 10px #bebfc4,
+    -5px -5px 10px #ffffff;
+  padding: 10px 20px;
+  transition: all .2s ease-in-out;
+}
+
+.neu-btn:active {
+  box-shadow:
+    inset 5px 5px 10px #bebfc4,
+    inset -5px -5px 10px #ffffff;
 }

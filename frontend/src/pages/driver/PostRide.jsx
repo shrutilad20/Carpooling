@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import rideAPI from "../../api/ride";
 
 export default function PostRide() {
@@ -17,80 +17,36 @@ export default function PostRide() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const email = localStorage.getItem("email");
 
     try {
-      const driverEmail = localStorage.getItem("email"); // from login
-
-      const response = await rideAPI.postRide(driverEmail, form);
-      alert("Ride posted successfully!");
-
+      await rideAPI.postRide(email, form);
+      alert("Ride Posted Successfully!");
       window.location.href = "/driver/my-rides";
-    } catch (err) {
+    } catch {
       alert("Error posting ride");
-      console.error(err);
     }
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Post a Ride</h2>
+    <div className="flex justify-center items-center py-10">
+      <div className="neu-card p-10 w-[450px]">
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: "400px" }}>
-        <input
-          type="text"
-          name="source"
-          placeholder="Source"
-          value={form.source}
-          onChange={handleChange}
-          required
-        /><br />
+        <h2 className="text-3xl font-bold mb-6 text-center">Post a Ride</h2>
 
-        <input
-          type="text"
-          name="destination"
-          placeholder="Destination"
-          value={form.destination}
-          onChange={handleChange}
-          required
-        /><br />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-        <input
-          type="datetime-local"
-          name="departureTime"
-          value={form.departureTime}
-          onChange={handleChange}
-          required
-        /><br />
+          <input className="neu-pressed p-3" placeholder="Source" name="source" onChange={handleChange} />
+          <input className="neu-pressed p-3" placeholder="Destination" name="destination" onChange={handleChange} />
+          <input className="neu-pressed p-3" type="datetime-local" name="departureTime" onChange={handleChange} />
+          <input className="neu-pressed p-3" placeholder="Total Seats" name="totalSeats" onChange={handleChange} />
+          <input className="neu-pressed p-3" placeholder="Base Fare" name="baseFare" onChange={handleChange} />
+          <input className="neu-pressed p-3" placeholder="Rate per KM" name="ratePerKm" onChange={handleChange} />
 
-        <input
-          type="number"
-          name="totalSeats"
-          placeholder="Total Seats"
-          value={form.totalSeats}
-          onChange={handleChange}
-          required
-        /><br />
+          <button className="neu-btn w-full mt-3">Submit</button>
+        </form>
 
-        <input
-          type="number"
-          name="baseFare"
-          placeholder="Base Fare"
-          value={form.baseFare}
-          onChange={handleChange}
-          required
-        /><br />
-
-        <input
-          type="number"
-          name="ratePerKm"
-          placeholder="Rate per KM"
-          value={form.ratePerKm}
-          onChange={handleChange}
-          required
-        /><br />
-
-        <button type="submit">Post Ride</button>
-      </form>
+      </div>
     </div>
   );
 }

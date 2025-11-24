@@ -1,37 +1,15 @@
 import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  const token = localStorage.getItem("token");
-
-  const logout = () => {
-    localStorage.clear();
-    window.location.href = "/login";
-  };
-
   return (
-    <nav style={{
-      padding: "10px",
-      background: "#222",
-      color: "white",
-      display: "flex",
-      justifyContent: "space-between"
-    }}>
-      <div>
-        <Link to="/" style={{ color: "white", marginRight: "20px" }}>Carpooling</Link>
-      </div>
+    <div className="neu-card px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+      <h2 className="text-xl font-bold">🚗 Carpooling</h2>
 
-      <div>
-        {!token ? (
-          <>
-            <Link to="/login" style={{ color: "white", marginRight: "10px" }}>Login</Link>
-            <Link to="/signup" style={{ color: "white" }}>Signup</Link>
-          </>
-        ) : (
-          <button onClick={logout} style={{ background: "red", color: "white" }}>
-            Logout
-          </button>
-        )}
+      <div className="flex gap-6 text-md">
+        <Link to="/" className="hover:text-blue-600">Home</Link>
+        <Link to="/login" className="hover:text-blue-600">Login</Link>
+        <Link to="/signup" className="hover:text-blue-600">Signup</Link>
       </div>
-    </nav>
+    </div>
   );
 }
