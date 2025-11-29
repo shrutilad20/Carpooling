@@ -1,14 +1,25 @@
-import axiosInstance from "../utils/axiosInstance";
+// frontend/src/api/ride.js
 
-const rideAPI = {
-  postRide: (driverEmail, body) =>
-    axiosInstance.post(`/rides/post?driverEmail=${driverEmail}`, body),
+import axiosInstance from "./axiosInstance";
+import { getToken } from "../utils/storage";
 
-  searchRides: (body) =>
-    axiosInstance.post("/rides/search", body),
-
-  getRideById: (id) =>
-    axiosInstance.get(`/rides/${id}`),
+const postRide = (rideData) => {
+  return axiosInstance.post("/api/rides/post", rideData, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
 };
 
-export default rideAPI;
+const getMyRides = () => {
+  return axiosInstance.get("/api/rides/my", {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+};
+
+export default {
+  postRide,
+  getMyRides
+};

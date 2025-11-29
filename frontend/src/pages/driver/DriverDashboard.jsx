@@ -1,31 +1,15 @@
 export default function DriverDashboard() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
   return (
-    <div className="px-6 py-10 text-center">
+    <div className="mt-10 text-center">
+      <div className="pastel-card w-[450px] mx-auto">
 
-      <div className="neu-card p-8 mx-auto w-[450px]">
-        <h2 className="text-3xl font-bold mb-4">
-          Welcome Driver, {user?.name}
+        <h2 className="text-3xl font-bold text-[#7aa4ff] mb-4">
+          Driver Dashboard
         </h2>
 
-        <div className="flex flex-col gap-4 mt-6">
+        <a href="/driver/post-ride" className="pastel-btn mb-4">Post a Ride</a>
+        <a href="/driver/my-rides" className="pastel-btn">My Rides</a>
 
-          <button
-            onClick={() => window.location.href = '/driver/post-ride'}
-            className="neu-btn w-full"
-          >
-            🚗 Post a Ride
-          </button>
-
-          <button
-            onClick={() => window.location.href = '/driver/my-rides'}
-            className="neu-btn w-full"
-          >
-            📄 My Rides
-          </button>
-
-        </div>
       </div>
     </div>
   );

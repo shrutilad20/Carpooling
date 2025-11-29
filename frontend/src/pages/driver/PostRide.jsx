@@ -17,13 +17,13 @@ export default function PostRide() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = localStorage.getItem("email");
 
     try {
-      await rideAPI.postRide(email, form);
+      await rideAPI.postRide(form);
       alert("Ride Posted Successfully!");
       window.location.href = "/driver/my-rides";
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("Error posting ride");
     }
   };
