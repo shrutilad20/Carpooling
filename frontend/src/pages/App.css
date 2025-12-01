@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+.input-field {
+  width: 100%;
+  padding: 12px;
+  background: #f9f9ff;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-field:focus {
+  border-color: #a78bfa;
+}
+

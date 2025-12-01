@@ -3,8 +3,8 @@ package com.carpooling.backend.dtos;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
-public class LoginRequest {
+@Getter
+@Setter
+public class OtpEmailRequest {
     private String email;
-    private String password; // OPTIONAL for OTP login
 }

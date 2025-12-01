@@ -10,7 +10,7 @@ import DriverDashboard from "./pages/driver/DriverDashboard";
 import PostRide from "./pages/driver/PostRide";
 import MyRides from "./pages/driver/MyRides";
 
-import PassengerDashboard from "./pages/passenger/PassengerDashboard";
+import PassengerDashboard from "./pages/passenger/PassengerDashboard.jsx";
 import SearchRide from "./pages/passenger/SearchRide";
 import BookRide from "./pages/passenger/BookRide";
 
@@ -23,14 +23,14 @@ function App() {
       <Navbar />
 
       <Routes>
-        {/* Public pages */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/role-selection" element={<RoleSelection />} />
 
-        {/* Driver routes */}
+        {/* Driver */}
         <Route
           path="/driver/dashboard"
           element={
@@ -58,7 +58,7 @@ function App() {
           }
         />
 
-        {/* Passenger routes */}
+        {/* Passenger */}
         <Route
           path="/passenger/dashboard"
           element={

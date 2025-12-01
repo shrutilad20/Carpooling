@@ -10,6 +10,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     List<Ride> findBySourceContainingIgnoreCaseAndDestinationContainingIgnoreCaseAndDepartureTimeBetween(
             String source, String destination, LocalDateTime start, LocalDateTime end);
+int countByDriverId(Long driverId);
 
     // ✔ ADD THIS INSIDE INTERFACE
     List<Ride> findByDriverId(Long driverId);

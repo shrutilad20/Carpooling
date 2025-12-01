@@ -6,13 +6,11 @@ export default function VerifyOtp() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // location.state should contain { form } from Signup page
   const { form } = location.state || {};
   const [otp, setOtp] = useState("");
 
   const handleVerify = async () => {
     try {
-      // ensure 'form' exists
       if (!form) {
         alert("Missing signup data. Please start signup again.");
         navigate("/signup");
@@ -28,12 +26,12 @@ export default function VerifyOtp() {
         otp: otp,
       };
 
-      const res = await authAPI.verifyOtp(payload);
+      // FIXED FUNCTION NAME
+      const res = await authAPI.verifySignupOtp(payload);
 
       alert("Signup successful!");
       navigate("/login");
     } catch (e) {
-      // show backend message if present
       alert("Invalid OTP or server error: " + (e.response?.data || e.message));
     }
   };

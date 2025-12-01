@@ -1,15 +1,18 @@
 package com.carpooling.backend.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class OtpVerifyRequest {
-    private String email;
-    private String otp;
+
+    private String email;    // Required for OTP lookup
+    private String otp;      // OTP entered by user
+
+    // For signup only
     private String name;
-    private String password;
     private String phone;
-    private String role;  // REQUIRED
+    private String password;
+    private String role;
+
+    // For login OTP verify (no signup fields needed)
 }

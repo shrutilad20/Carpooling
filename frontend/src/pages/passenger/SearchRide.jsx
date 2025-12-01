@@ -1,58 +1,111 @@
-import { useState } from "react";
-import rideAPI from "../../api/ride";
-import RideCard from "../../components/RideCard";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function SearchRide() {
-  const [form, setForm] = useState({
-    source: "",
-    destination: "",
-    date: ""
-  });
+function SearchRide() {
+  const [source, setSource] = useState("");
+  const [destination, setDestination] = useState("");
+  const [date, setDate] = useState("");
+  const [rides, setRides] = useState([]);
 
-  const [results, setResults] = useState([]);
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-
-    const body = {
-      source: form.source,
-      destination: form.destination,
-      from: form.date + "T00:00:00",
-      to: form.date + "T23:59:00",
-    };
-
+  const handleSearch = async () => {
     try {
-      const res = await rideAPI.searchRides(body);
-      setResults(res.data);
-    } catch {
-      alert("Error getting rides");
+      const token = localStorage.getItem("token");
+
+      const res = await axios.post(
+        "http://localhost:8080/api/rides/search",
+        {
+          source,
+          destination,
+          from: date + "T00:00:00",
+          to: date + "T23:59:59",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setRides(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Error fetching rides");
     }
   };
 
   return (
-    <div className="px-6 py-10">
-      <div className="neu-card p-8 mx-auto w-[420px]">
-        <h2 className="text-2xl font-bold mb-4 text-center">Search Rides</h2>
+    <div className="min-h-screen p-8 bg-purple-50">
+      <h1 className="text-3xl font-bold gradient-text mb-6">
+        Find a Ride
+      </h1>
 
-        <form onSubmit={handleSearch} className="flex flex-col gap-4">
-          <input className="neu-pressed p-3" placeholder="Source" name="source" onChange={handleChange} />
-          <input className="neu-pressed p-3" placeholder="Destination" name="destination" onChange={handleChange} />
-          <input className="neu-pressed p-3" type="date" name="date" onChange={handleChange} />
-          <button className="neu-btn w-full">Search</button>
-        </form>
+      <div className="pastel-card max-w-2xl mx-auto space-y-4">
+        <input
+          className="pastel-input"
+          type="text"
+          placeholder="Enter Source"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+        />
+
+        <input
+          className="pastel-input"
+          type="text"
+          placeholder="Enter Destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+        />
+
+        <input
+          className="pastel-input"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+
+        <button className="pastel-btn pastel-btn-primary w-full" onClick={handleSearch}>
+          Search Ride
+        </button>
       </div>
 
-      <h3 className="mt-10 text-xl font-semibold text-center">Available Rides</h3>
+      {/* Results */}
+      <div className="mt-10 max-w-3xl mx-auto space-y-4">
+        {rides.length === 0 ? (
+          <p className="text-gray-500 text-center">No rides found</p>
+        ) : (
+          rides.map((ride) => (
+            <div key={ride.id} className="pastel-card hover-lift">
+              <h3 className="text-xl font-semibold">
+                {ride.source} → {ride.destination}
+              </h3>
 
-      <div className="mt-4 flex flex-col items-center">
-        {results.length === 0 ? <p>No rides found</p> :
-          results.map((r) => <RideCard key={r.id} ride={r} />)
-        }
+              <p className="text-gray-600">
+                Departure: {ride.departureTime.replace("T", " @ ")}
+              </p>
+
+              <p className="text-gray-600">
+                Seats Available: {ride.availableSeats}
+              </p>
+
+              <p className="text-gray-600">
+                Fare: ₹{ride.baseFare} + {ride.ratePerKm} /km
+              </p>
+
+              <button
+                className="pastel-btn pastel-btn-secondary mt-3"
+                onClick={() => navigate(`/passenger/book/${ride.id}`)}
+              >
+                Book Ride
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
 }
+
+export default SearchRide;

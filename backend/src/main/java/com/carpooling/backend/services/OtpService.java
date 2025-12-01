@@ -16,25 +16,22 @@ public class OtpService {
     }
 
     public String generateOtp(String email) {
-
         String otp = String.valueOf((int)(Math.random()*900000) + 100000);
 
-        Otp otpObj = otpRepo.findByEmail(email).orElse(new Otp());
-        otpObj.setEmail(email);
-        otpObj.setCode(otp);
-        otpObj.setExpiry(LocalDateTime.now().plusMinutes(5));
+        Otp record = otpRepo.findByEmail(email).orElse(new Otp());
+        record.setEmail(email);
+        record.setCode(otp);
+        record.setExpiry(LocalDateTime.now().plusMinutes(5));
 
-        otpRepo.save(otpObj);
-
+        otpRepo.save(record);
         return otp;
     }
 
     public boolean verifyOtp(String email, String code) {
-
         Otp otp = otpRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("OTP not found"));
 
         return otp.getCode().equals(code) &&
-                otp.getExpiry().isAfter(LocalDateTime.now());
+               otp.getExpiry().isAfter(LocalDateTime.now());
     }
 }

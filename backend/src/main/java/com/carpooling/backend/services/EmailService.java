@@ -14,11 +14,18 @@ public class EmailService {
     }
 
     public void sendOtp(String email, String otp) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Your OTP Code");
-        message.setText("Your OTP is: " + otp + "\nValid for 5 minutes.");
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("Your OTP Code");
+            message.setText("Your OTP is: " + otp + "\nValid for 5 minutes.");
 
-        mailSender.send(message);
+            mailSender.send(message);
+            System.out.println("OTP email sent successfully to: " + email);
+
+        } catch (Exception e) {
+            System.err.println("ERROR sending OTP email: " + e.getMessage());
+            throw new RuntimeException("Failed to send email");
+        }
     }
 }

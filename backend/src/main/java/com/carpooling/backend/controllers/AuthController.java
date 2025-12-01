@@ -3,7 +3,7 @@ package com.carpooling.backend.controllers;
 import com.carpooling.backend.dtos.*;
 import com.carpooling.backend.services.AuthService;
 import com.carpooling.backend.services.EmailService;
-import com.carpooling.backend.services.OtpService;
+import com.carpooling.backend.services.OtpService;   // ✅ ADD THIS
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,17 +23,23 @@ public class AuthController {
         this.emailService = emailService;
     }
 
-    // SEND OTP FOR SIGNUP
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
+    // -------------------------------
+    // 1️⃣ SEND OTP FOR SIGNUP
+    // -------------------------------
+    @PostMapping("/send-signup-otp")
+    public ResponseEntity<?> sendSignupOtp(@RequestBody SignupRequest req) {
+
         String otp = otpService.generateOtp(req.getEmail());
         emailService.sendOtp(req.getEmail(), otp);
-        return ResponseEntity.ok("OTP sent. Verify to complete signup.");
+
+        return ResponseEntity.ok("Signup OTP sent");
     }
 
-    // VERIFY OTP (SIGNUP)
-    @PostMapping("/verify-otp")
-    public ResponseEntity<AuthResponse> verifyOtp(@RequestBody OtpVerifyRequest req) {
+    // -------------------------------
+    // 2️⃣ VERIFY SIGNUP OTP + CREATE USER
+    // -------------------------------
+    @PostMapping("/verify-signup-otp")
+    public ResponseEntity<AuthResponse> verifySignupOtp(@RequestBody OtpVerifyRequest req) {
 
         if (!otpService.verifyOtp(req.getEmail(), req.getOtp())) {
             return ResponseEntity.badRequest()
@@ -47,27 +53,44 @@ public class AuthController {
         signup.setPhone(req.getPhone());
         signup.setRole(req.getRole());
 
-        AuthResponse response = authService.signup(signup);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.signup(signup));
     }
 
-    // LOGIN
+    // -------------------------------
+    // 3️⃣ NORMAL LOGIN
+    // -------------------------------
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
         return ResponseEntity.ok(authService.login(req.getEmail(), req.getPassword()));
     }
-    @PostMapping("/send-login-otp")
-public ResponseEntity<?> sendLoginOtp(@RequestBody LoginRequest req) {
 
-    if (!authService.userExists(req.getEmail())) {
-        return ResponseEntity.badRequest().body("User not found");
+    // -------------------------------
+    // 4️⃣ SEND OTP FOR LOGIN
+    // -------------------------------
+    @PostMapping("/send-login-otp")
+    public ResponseEntity<?> sendLoginOtp(@RequestBody LoginRequest req) {
+
+        if (!authService.userExists(req.getEmail())) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        String otp = otpService.generateOtp(req.getEmail());
+        emailService.sendOtp(req.getEmail(), otp);
+
+        return ResponseEntity.ok("Login OTP sent");
     }
 
-    String otp = otpService.generateOtp(req.getEmail());
-    emailService.sendOtp(req.getEmail(), otp);
+    // -------------------------------
+    // 5️⃣ VERIFY LOGIN OTP
+    // -------------------------------
+    @PostMapping("/verify-login-otp")
+    public ResponseEntity<AuthResponse> verifyLoginOtp(@RequestBody OtpVerifyRequest req) {
 
-    return ResponseEntity.ok("OTP sent for login.");
-}
+        if (!otpService.verifyOtp(req.getEmail(), req.getOtp())) {
+            return ResponseEntity.badRequest()
+                    .body(new AuthResponse(null, "Invalid or expired OTP", null));
+        }
 
+        return ResponseEntity.ok(authService.login(req.getEmail(), req.getPassword()));
+    }
 }
