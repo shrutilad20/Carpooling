@@ -565,9 +565,9 @@ export default function App() {
   );
 
   return (
+
     <div className="min-h-screen">
       <Navbar />
-      
       {currentPage === 'landing' && <LandingPage onNavigate={setCurrentPage} />}
       {currentPage === 'signup' && <SignupPage onNavigate={setCurrentPage} onLogin={login} />}
       {currentPage === 'login' && <LoginPage onNavigate={setCurrentPage} onLogin={login} />}
@@ -575,4 +575,5 @@ export default function App() {
       {currentPage === 'passenger-dashboard' && user && <PassengerDashboard onNavigate={setCurrentPage} user={user} />}
     </div>
   );
+  
 }
