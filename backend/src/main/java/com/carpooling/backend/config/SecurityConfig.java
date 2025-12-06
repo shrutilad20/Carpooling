@@ -1,19 +1,17 @@
 package com.carpooling.backend.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-
 import java.util.List;
 
 @Configuration
@@ -25,40 +23,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(request -> {
+        http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(req -> {
                     CorsConfiguration cfg = new CorsConfiguration();
                     cfg.setAllowedOrigins(List.of("http://localhost:3000"));
-                    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                     cfg.setAllowedHeaders(List.of("*"));
                     cfg.setAllowCredentials(true);
                     return cfg;
                 }))
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/test/**").permitAll()
-                        .requestMatchers("/api/passenger/**").authenticated()
 
-                        // Protected APIs
-                        .requestMatchers("/rides/**").authenticated()
-                        .requestMatchers("/book/**").authenticated()
+                        // Milestone 1/2 protected APIs
+                        .requestMatchers("/api/**").authenticated()
 
                         .anyRequest().permitAll()
                 )
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
-                .logout(logout -> logout.disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin(f -> f.disable())
+                .httpBasic(b -> b.disable());
 
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

@@ -5,8 +5,8 @@ import com.carpooling.backend.dtos.SearchRideRequest;
 import com.carpooling.backend.models.*;
 import com.carpooling.backend.repositories.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,14 +15,22 @@ public class RideService {
 
     private final RideRepository rideRepo;
     private final UserRepository userRepo;
-    public RideService(RideRepository rideRepo, UserRepository userRepo) {
+    private final BookingRepository bookingRepo;
+
+    public RideService(RideRepository rideRepo,
+                       UserRepository userRepo,
+                       BookingRepository bookingRepo) {
         this.rideRepo = rideRepo;
         this.userRepo = userRepo;
+        this.bookingRepo = bookingRepo;
     }
 
+    // Driver posts ride
     public Ride postRide(String driverEmail, PostRideRequest req) {
 
-        User driver = userRepo.findByEmail(driverEmail).orElseThrow(() -> new RuntimeException("Driver not found"));
+        User driver = userRepo.findByEmail(driverEmail)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
         Ride r = new Ride();
         r.setDriver(driver);
         r.setSource(req.getSource());
@@ -32,25 +40,39 @@ public class RideService {
         r.setAvailableSeats(req.getTotalSeats());
         r.setBaseFare(req.getBaseFare());
         r.setRatePerKm(req.getRatePerKm());
+
         return rideRepo.save(r);
     }
-public List<Ride> getRidesByDriver(Long driverId) {
-    return rideRepo.findByDriverId(driverId);
-}
-@Autowired BookingRepository bookingRepo;
-public List<Booking> getBookingsForRide(Long rideId) {
-    return bookingRepo.findByRideId(rideId);
-}
 
+    public List<Ride> getRidesByDriver(Long driverId) {
+        return rideRepo.findByDriverId(driverId);
+    }
+
+    public List<Booking> getBookingsForRide(Long rideId) {
+        return bookingRepo.findByRideId(rideId);
+    }
 
     public List<Ride> searchRides(SearchRideRequest req) {
-        LocalDateTime from = req.getFrom() == null ? LocalDateTime.now().minusDays(1) : req.getFrom();
-        LocalDateTime to = req.getTo() == null ? LocalDateTime.now().plusDays(30) : req.getTo();
-        return rideRepo.findBySourceContainingIgnoreCaseAndDestinationContainingIgnoreCaseAndDepartureTimeBetween(
-                req.getSource() == null ? "" : req.getSource(),
-                req.getDestination() == null ? "" : req.getDestination(),
-                from, to
-        );
-        
+
+        LocalDateTime from = req.getFrom() != null
+                ? req.getFrom()
+                : LocalDateTime.now().minusDays(1);
+
+        LocalDateTime to = req.getTo() != null
+                ? req.getTo()
+                : LocalDateTime.now().plusDays(30);
+
+        String src = (req.getSource() == null) ? "" : req.getSource();
+        String dest = (req.getDestination() == null) ? "" : req.getDestination();
+
+        return rideRepo
+                .findBySourceContainingIgnoreCaseAndDestinationContainingIgnoreCaseAndDepartureTimeBetween(
+                        src, dest, from, to
+                );
+    }
+
+    public Ride getById(Long rideId) {
+        return rideRepo.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
     }
 }

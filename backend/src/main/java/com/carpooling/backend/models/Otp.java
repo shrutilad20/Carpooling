@@ -13,8 +13,6 @@ public class Otp {
     private Long id;
 
     private String email;
-
     private String code;
-
     private LocalDateTime expiry;
 }

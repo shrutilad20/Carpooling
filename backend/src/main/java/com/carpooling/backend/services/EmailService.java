@@ -7,25 +7,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final JavaMailSender sender;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    public EmailService(JavaMailSender sender) { this.sender = sender; }
 
     public void sendOtp(String email, String otp) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("Your OTP Code");
-            message.setText("Your OTP is: " + otp + "\nValid for 5 minutes.");
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(email);
+        msg.setSubject("Your OTP Code");
+        msg.setText("Your OTP is: " + otp + "\nValid for 5 minutes.");
 
-            mailSender.send(message);
-            System.out.println("OTP email sent successfully to: " + email);
-
-        } catch (Exception e) {
-            System.err.println("ERROR sending OTP email: " + e.getMessage());
-            throw new RuntimeException("Failed to send email");
-        }
+        sender.send(msg);
     }
 }

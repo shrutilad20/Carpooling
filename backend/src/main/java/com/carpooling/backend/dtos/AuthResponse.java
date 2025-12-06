@@ -1,14 +1,10 @@
 package com.carpooling.backend.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Getter @Setter @AllArgsConstructor
 public class AuthResponse {
     private String token;
     private String message;
-    private String role;   // <-- ADD THIS
+    private String role;
 }

@@ -1,17 +1,16 @@
 package com.carpooling.backend.controllers;
 
 import com.carpooling.backend.models.User;
-import com.carpooling.backend.repositories.RideRepository;
 import com.carpooling.backend.repositories.BookingRepository;
-
+import com.carpooling.backend.repositories.RideRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/dashboard")
 public class DashboardController {
 
     private final RideRepository rideRepo;
@@ -22,14 +21,11 @@ public class DashboardController {
         this.bookingRepo = bookingRepo;
     }
 
-    // -------------------- DRIVER DASHBOARD --------------------
-    @GetMapping("/dashboard/driver")
+    @GetMapping("/driver")
     public ResponseEntity<?> driverDashboard() {
 
-        User driver = (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+        User driver = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
 
         Long driverId = driver.getId();
 

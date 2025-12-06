@@ -3,11 +3,11 @@ package com.carpooling.backend.controllers;
 import com.carpooling.backend.dtos.PostRideRequest;
 import com.carpooling.backend.dtos.SearchRideRequest;
 import com.carpooling.backend.models.Ride;
+import com.carpooling.backend.models.User;
 import com.carpooling.backend.services.RideService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.carpooling.backend.models.User;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,41 +16,45 @@ import java.util.List;
 public class RideController {
 
     private final RideService rideService;
+
     public RideController(RideService rideService) { this.rideService = rideService; }
 
-   @PostMapping("/post")
-public ResponseEntity<Ride> postRide(@RequestBody PostRideRequest req) {
+    // Driver posts a ride
+    @PostMapping("/post")
+    public ResponseEntity<Ride> postRide(@RequestBody PostRideRequest req) {
 
-    // Get logged-in user from JWT
-    User loggedInUser = (User) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
+        User driver = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
 
-    String driverEmail = loggedInUser.getEmail();
+        Ride ride = rideService.postRide(driver.getEmail(), req);
+        return ResponseEntity.ok(ride);
+    }
 
-    Ride ride = rideService.postRide(driverEmail, req);
-    return ResponseEntity.ok(ride);
-}
-@GetMapping("/my")
-public ResponseEntity<?> myPostedRides() {
+    // Driver's rides
+    @GetMapping("/my")
+    public ResponseEntity<?> myPostedRides() {
 
-    User user = (User) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
+        User driver = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
 
-    return ResponseEntity.ok(
-            rideService.getRidesByDriver(user.getId())
-    );
-}
-@GetMapping("/{rideId}/bookings")
-public ResponseEntity<?> rideBookings(@PathVariable Long rideId) {
-    return ResponseEntity.ok(
-            rideService.getBookingsForRide(rideId)
-    );
-}
+        return ResponseEntity.ok(rideService.getRidesByDriver(driver.getId()));
+    }
 
+    // Bookings for a ride (for driver dashboard)
+    @GetMapping("/{rideId}/bookings")
+    public ResponseEntity<?> rideBookings(@PathVariable Long rideId) {
+        return ResponseEntity.ok(rideService.getBookingsForRide(rideId));
+    }
 
-
+    // Search rides (passengers)
     @PostMapping("/search")
     public ResponseEntity<List<Ride>> searchRides(@RequestBody SearchRideRequest req) {
         return ResponseEntity.ok(rideService.searchRides(req));
+    }
+
+    // Get single ride details
+    @GetMapping("/{rideId}")
+    public ResponseEntity<Ride> getRide(@PathVariable Long rideId) {
+        return ResponseEntity.ok(rideService.getById(rideId));
     }
 }

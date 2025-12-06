@@ -1,16 +1,13 @@
 package com.carpooling.backend.services;
 
 import com.carpooling.backend.dtos.BookingRequest;
-import com.carpooling.backend.models.Booking;
-import com.carpooling.backend.models.Ride;
-import com.carpooling.backend.models.User;
-import com.carpooling.backend.repositories.BookingRepository;
-import com.carpooling.backend.repositories.RideRepository;
-import com.carpooling.backend.repositories.UserRepository;
-
-import java.util.List;
+import com.carpooling.backend.models.*;
+import com.carpooling.backend.repositories.*;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class BookingService {
@@ -19,16 +16,19 @@ public class BookingService {
     private final UserRepository userRepo;
     private final BookingRepository bookingRepo;
 
-    public BookingService(RideRepository rideRepo, UserRepository userRepo, BookingRepository bookingRepo) {
+    public BookingService(RideRepository rideRepo,
+                          UserRepository userRepo,
+                          BookingRepository bookingRepo) {
         this.rideRepo = rideRepo;
         this.userRepo = userRepo;
         this.bookingRepo = bookingRepo;
     }
+
     public List<Booking> getBookingsForPassenger(Long passengerId) {
-    return bookingRepo.findByPassengerId(passengerId);
-}
+        return bookingRepo.findByPassengerId(passengerId);
+    }
 
-
+    @Transactional
     public Booking bookRide(String passengerEmail, BookingRequest req) {
 
         Ride ride = rideRepo.findById(req.getRideId())

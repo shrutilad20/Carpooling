@@ -2,10 +2,8 @@ package com.carpooling.backend.config;
 
 import com.carpooling.backend.services.CustomUserDetailsService;
 import com.carpooling.backend.utils.JwtUtils;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -26,15 +24,16 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain)
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
 
-        // 🚨 FIX: Skip JWT validation for public endpoints
-        if (path.startsWith("/auth/")) {
+        // allow these endpoints without token
+        if (path.startsWith("/auth/") || path.startsWith("/ws")) {
             chain.doFilter(request, response);
             return;
         }
@@ -52,27 +51,19 @@ public class JwtFilter extends OncePerRequestFilter {
             String email = jwtUtils.getUsernameFromToken(token);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
                 var userDetails = userDetailsService.loadUserByUsername(email);
 
                 if (jwtUtils.validateJwtToken(token)) {
-                    UsernamePasswordAuthenticationToken authToken =
+                    UsernamePasswordAuthenticationToken auth =
                             new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
+                                    userDetails, null, userDetails.getAuthorities());
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
 
-        } catch (Exception e) {
-            System.out.println("JWT ERROR: " + e.getMessage());
-            // Do not block request, just continue
-        }
+        } catch (Exception ignored) {}
 
         chain.doFilter(request, response);
     }

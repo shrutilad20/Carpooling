@@ -1,14 +1,9 @@
 package com.carpooling.backend.utils;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.JwtException;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
 
@@ -27,24 +22,23 @@ public class JwtUtils {
 
     public String generateJwtToken(String subject) {
         Date now = new Date();
-        Date exp = new Date(now.getTime() + jwtExpirationMs);
+        Date expiry = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(now)
-                .setExpiration(exp)
+                .setExpiration(expiry)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject();
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateJwtToken(String token) {
@@ -55,7 +49,7 @@ public class JwtUtils {
                     .parseClaimsJws(token);
             return true;
 
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException e) {
             return false;
         }
     }

@@ -8,8 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,32 +24,27 @@ public class PassengerDashboardController {
     @GetMapping("/dashboard")
     public ResponseEntity<?> dashboard() {
 
-        // Get logged-in passenger from JWT
         User passenger = (User) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
 
         Long passengerId = passenger.getId();
 
-        // Fetch all bookings
-        List<Booking> allBookings = bookingRepo.findByPassengerId(passengerId);
+        List<Booking> all = bookingRepo.findByPassengerId(passengerId);
 
-        // Upcoming rides
-        List<Booking> upcoming = allBookings.stream()
+        List<Booking> upcoming = all.stream()
                 .filter(b -> b.getRide().getDepartureTime().isAfter(LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-        // Past rides
-        List<Booking> past = allBookings.stream()
+        List<Booking> past = all.stream()
                 .filter(b -> b.getRide().getDepartureTime().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "passenger", passenger.getName(),
-                        "totalBookings", allBookings.size(),
-                        "upcoming", upcoming,
-                        "past", past
-                )
-        );
+        Map<String, Object> body = new HashMap<>();
+        body.put("passenger", passenger.getName());
+        body.put("totalBookings", all.size());
+        body.put("upcoming", upcoming);
+        body.put("past", past);
+
+        return ResponseEntity.ok(body);
     }
 }
