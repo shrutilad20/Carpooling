@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
+import useRideUpdates from "../../hooks/useRideUpdates";
+
 
 export default function MyRides() {
   const navigate = useNavigate();
@@ -23,6 +25,17 @@ export default function MyRides() {
       setLoading(false);
     }
   };
+  useRideUpdates(selectedRide, (update) => {
+  // When this ride is updated (new booking / cancellation),
+  // refresh bookings + ride info.
+  if (update && update.id === selectedRide) {
+    setRides((prev) =>
+      prev.map((r) => (r.id === update.id ? { ...r, ...update } : r))
+    );
+    fetchBookings(update.id);
+  }
+});
+
 
   const fetchBookings = async (rideId) => {
     try {
